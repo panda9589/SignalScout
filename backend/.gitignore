@@ -1,7 +1,5 @@
-gradle-wrapper.jar
 .gradle/
 build/
 .DS_Store
 *.log
 *.class
-*.jar
