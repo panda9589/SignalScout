@@ -1,0 +1,3 @@
+-- Initial schema created by 001_init_schema.sql in infra/postgres-init/
+-- This migration file exists for Flyway version tracking in the backend
+-- Actual schema initialization happens via docker-entrypoint-initdb.d
