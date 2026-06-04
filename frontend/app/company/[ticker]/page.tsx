@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { apiClient } from '@/lib/api-client';
@@ -21,11 +21,7 @@ export default function CompanyPage({ params }: PageProps) {
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState<DocumentExtractedResponse | null>(null);
 
-  useEffect(() => {
-    fetchCompanyDetail();
-  }, [params.ticker]);
-
-  const fetchCompanyDetail = async () => {
+  const fetchCompanyDetail = useCallback(async () => {
     setLoading(true);
     try {
       const response = await apiClient.getCompanyDetail(params.ticker.toUpperCase());
@@ -37,7 +33,11 @@ export default function CompanyPage({ params }: PageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.ticker]);
+
+  useEffect(() => {
+    fetchCompanyDetail();
+  }, [fetchCompanyDetail]);
 
   const handleExtractionSuccess = (extractedResult: DocumentExtractedResponse) => {
     setResult(extractedResult);
