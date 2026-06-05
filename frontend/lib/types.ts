@@ -84,3 +84,53 @@ export interface ManualDocumentPasteRequest {
   companyId: string;
   sourceType: string;
 }
+
+export interface DocumentSearchResultDto {
+  documentId: number;
+  chunkId: number;
+  chunkIndex: number;
+  ticker?: string;
+  title?: string;
+  sourceType: string;
+  snippet: string;
+  distance?: number;
+}
+
+export interface JobRunDto {
+  id: number;
+  jobName: string;
+  startedAt: string;
+  finishedAt?: string;
+  status: string;
+  errorMessage?: string;
+  documentsFound: number;
+  documentsProcessed: number;
+  aiCalls: number;
+  estimatedCostUsd?: number;
+}
+
+export interface SecIngestionResponse {
+  jobRunId: number;
+  companiesScanned: number;
+  filingsFound: number;
+  documentsStored: number;
+  duplicatesSkipped: number;
+  chunksCreated: number;
+}
+
+export interface RssIngestionResponse {
+  jobRunId: number;
+  itemsFound: number;
+  documentsStored: number;
+  duplicatesSkipped: number;
+  autoMatchedDocuments: number;
+  chunksCreated: number;
+}
+
+export interface EmbeddingJobResponse {
+  jobRunId: number;
+  chunksFound: number;
+  embeddingsCreated: number;
+  aiCalls: number;
+  modelName: string;
+}

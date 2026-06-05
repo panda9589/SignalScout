@@ -36,6 +36,7 @@ public class DocumentService {
     private final ExtractedEventRepository extractedEventRepository;
     private final OpenAIExtractionService extractionService;
     private final ScoringService scoringService;
+    private final DocumentChunkingService documentChunkingService;
     private final ObjectMapper objectMapper;
     
     /**
@@ -80,6 +81,9 @@ public class DocumentService {
         
         document = rawDocumentRepository.save(document);
         log.info("Stored raw document {}: company={}", document.getId(), company.getTicker());
+
+        int chunksCreated = documentChunkingService.recreateChunks(document);
+        log.info("Created {} chunks for raw document {}", chunksCreated, document.getId());
         
         // Call OpenAI for extraction
         ExtractionOutputDto extraction = extractionService.extractFromDocument(document);

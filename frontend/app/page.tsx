@@ -54,7 +54,14 @@ export default function Home() {
               <li>Company watchlist</li>
               <li>Event extraction history</li>
               <li>Simple scoring and recommendations</li>
+              <li>Stored document search and job history</li>
             </ul>
+            <Link
+              href="/research"
+              className="mt-5 inline-flex bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+            >
+              Open Research
+            </Link>
           </div>
         </section>
       </div>

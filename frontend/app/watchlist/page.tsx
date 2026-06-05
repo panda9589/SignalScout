@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { apiClient } from '@/lib/api-client';
 import { WatchlistSummaryDto } from '@/lib/types';
@@ -55,10 +56,20 @@ export default function WatchlistPage() {
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Investment Watchlist</h1>
-          <p className="text-gray-600">
-            Track companies and extract investment events to generate buy/sell/hold recommendations
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">Investment Watchlist</h1>
+              <p className="text-gray-600">
+                Track companies and extract investment events to generate buy/sell/hold recommendations
+              </p>
+            </div>
+            <Link
+              href="/research"
+              className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+            >
+              Research
+            </Link>
+          </div>
         </div>
 
         {/* Initialize Data Button */}

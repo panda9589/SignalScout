@@ -1,10 +1,13 @@
 package com.scout.presentation.controller;
 
-import com.scout.application.dto.ManualDocumentPasteRequest;
+import com.scout.application.dto.ChunkDocumentResponse;
+import com.scout.application.dto.DocumentChunkDto;
 import com.scout.application.dto.DocumentExtractedResponse;
-import com.scout.application.dto.CompanyDetailResponse;
-import com.scout.application.dto.WatchlistSummaryDto;
+import com.scout.application.dto.DocumentSearchResultDto;
+import com.scout.application.dto.ManualDocumentPasteRequest;
+import com.scout.application.service.DocumentChunkingService;
 import com.scout.application.service.DocumentService;
+import com.scout.application.service.EmbeddingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,8 @@ import java.util.List;
 public class DocumentController {
     
     private final DocumentService documentService;
+    private final DocumentChunkingService documentChunkingService;
+    private final EmbeddingService embeddingService;
     
     /**
      * POST /api/documents/manual
@@ -45,5 +50,29 @@ public class DocumentController {
                 response.getEventId(), response.getRecommendation(), response.getStockScore());
         
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/{id}/chunk")
+    public ResponseEntity<ChunkDocumentResponse> chunkDocument(@PathVariable Long id) {
+        return ResponseEntity.ok(documentChunkingService.chunkDocument(id));
+    }
+
+    @GetMapping("/{id}/chunks")
+    public ResponseEntity<List<DocumentChunkDto>> getChunks(@PathVariable Long id) {
+        return ResponseEntity.ok(documentChunkingService.getDocumentChunks(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<DocumentSearchResultDto>> searchDocuments(
+            @RequestParam("q") String query,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        return ResponseEntity.ok(documentChunkingService.searchChunks(query, limit));
+    }
+
+    @GetMapping("/semantic-search")
+    public ResponseEntity<List<DocumentSearchResultDto>> semanticSearchDocuments(
+            @RequestParam("q") String query,
+            @RequestParam(value = "limit", defaultValue = "10") int limit) {
+        return ResponseEntity.ok(embeddingService.semanticSearch(query, limit));
     }
 }

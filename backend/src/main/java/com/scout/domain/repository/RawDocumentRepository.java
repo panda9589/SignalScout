@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface RawDocumentRepository extends JpaRepository<RawDocument, Long> {
     Optional<RawDocument> findByContentHash(String contentHash);
+    boolean existsBySourceTypeAndExternalId(String sourceType, String externalId);
+    Optional<RawDocument> findBySourceTypeAndExternalId(String sourceType, String externalId);
 }
