@@ -363,9 +363,36 @@ Get the latest portfolio action recommendations.
 ```
 
 ### POST `/recommendations/generate`
-Generate on-demand portfolio action report.
+Generate an on-demand portfolio action report from current holdings, active theses, risk settings, and latest extracted company events.
 
-**Response:** 201 Created with full portfolio action report
+**Response:**
+```json
+{
+  "generatedAt": "2026-06-04T23:50:00",
+  "totalMarketValueCad": 1000,
+  "riskSettings": {
+    "maxSingleStockPositionPct": 12,
+    "maxSectorExposurePct": 35,
+    "minScoreForNewBuy": 72,
+    "minSourceQualityForNewBuy": 65
+  },
+  "actions": [
+    {
+      "companyId": 3,
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "action": "HOLD",
+      "stockScore": 68,
+      "currentWeightPct": 100,
+      "sectorExposurePct": 100,
+      "hasHolding": true,
+      "hasActiveThesis": true,
+      "reason": "Position is above the configured max single-stock limit."
+    }
+  ]
+}
+```
 
 ---
 
@@ -398,6 +425,14 @@ Create a new portfolio account.
 }
 ```
 
+### PUT `/portfolio/accounts/{id}`
+Update an existing portfolio account.
+
+**Request Body:** same shape as `POST /portfolio/accounts`.
+
+### DELETE `/portfolio/accounts/{id}`
+Delete an account and its holdings.
+
 ### GET `/portfolio/holdings`
 List all holdings across accounts.
 
@@ -406,8 +441,10 @@ List all holdings across accounts.
 [
   {
     "id": 1,
-    "account": "TFSA",
+    "accountId": 1,
+    "accountName": "TFSA",
     "ticker": "MRVL",
+    "symbol": "MRVL",
     "quantity": 100,
     "avgCost": 45.50,
     "marketValueCad": 5500,
@@ -416,16 +453,51 @@ List all holdings across accounts.
 ]
 ```
 
-### PUT `/portfolio/holdings/{id}`
-Update a holding.
+### POST `/portfolio/holdings`
+Create a holding entry.
 
 **Request Body:**
 ```json
 {
-  "quantity": 150,
-  "avgCost": 45.50
+  "accountId": 1,
+  "symbol": "NVDA",
+  "quantity": 1,
+  "avgCost": 900,
+  "marketValueCad": 1000
 }
 ```
+
+### PUT `/portfolio/holdings/{id}`
+Update a holding entry.
+
+**Request Body:** same shape as `POST /portfolio/holdings`.
+
+### DELETE `/portfolio/holdings/{id}`
+Delete a holding entry.
+
+### GET `/portfolio/risk-settings`
+Get portfolio action thresholds.
+
+### PUT `/portfolio/risk-settings`
+Update portfolio action thresholds.
+
+**Request Body:**
+```json
+{
+  "maxSingleStockPositionPct": 12,
+  "maxSectorExposurePct": 35,
+  "minScoreForNewBuy": 72,
+  "minSourceQualityForNewBuy": 65
+}
+```
+
+### PUT `/theses/{id}`
+Update an investment thesis.
+
+**Request Body:** same shape as `POST /theses`.
+
+### DELETE `/theses/{id}`
+Delete an investment thesis.
 
 ---
 
@@ -439,11 +511,13 @@ List all investment theses.
 [
   {
     "id": 1,
+    "companyId": 1,
     "ticker": "MRVL",
+    "companyName": "Marvell Technology, Inc.",
     "thesisText": "I believe AI data-center demand will drive MRVL custom silicon revenue...",
     "status": "active",
     "buyReason": "Custom silicon play on AI hyperscaler buildout",
-    "timeHorizonMonths": 24
+    "expectedTimeHorizonMonths": 24
   }
 ]
 ```
@@ -454,13 +528,11 @@ Create a new investment thesis.
 **Request Body:**
 ```json
 {
-  "ticker": "MRVL",
+  "companyId": 1,
   "thesisText": "AI data-center custom silicon thesis...",
   "buyReason": "Custom silicon demand from hyperscalers",
   "expectedTimeHorizonMonths": 24,
-  "buyTriggers": ["Data-center revenue acceleration", "Guidance raise"],
-  "sellTriggers": ["Guidance cut", "Customer loss"],
-  "maxPositionPct": 5
+  "status": "ACTIVE"
 }
 ```
 

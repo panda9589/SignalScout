@@ -171,15 +171,26 @@ export default function ResearchPage() {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <header className="flex items-start justify-between gap-4 border-b border-gray-200 pb-6 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-950">Research Radar</h1>
+            <Link href="/" className="text-3xl font-bold text-gray-950 hover:text-blue-700">
+              SignalScout
+            </Link>
+            <h1 className="mt-2 text-xl font-bold text-gray-950">Research Radar</h1>
             <p className="text-gray-600 mt-1">Search stored document chunks and monitor ingestion jobs.</p>
           </div>
-          <Link
-            href="/watchlist"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-          >
-            Watchlist
-          </Link>
+          <nav className="flex flex-wrap gap-2">
+            <Link
+              href="/watchlist"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
+            >
+              Watchlist
+            </Link>
+            <Link
+              href="/portfolio"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              Portfolio
+            </Link>
+          </nav>
         </header>
 
         <section className="grid grid-cols-1 xl:grid-cols-3 gap-6">

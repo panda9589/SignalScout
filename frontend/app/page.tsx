@@ -26,12 +26,26 @@ export default function Home() {
             <h1 className="text-3xl font-bold text-gray-950">SignalScout</h1>
             <p className="text-gray-600 mt-1">Market research radar for investment memos.</p>
           </div>
-          <Link
-            href="/watchlist"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
-          >
-            Open Watchlist
-          </Link>
+          <nav className="flex flex-wrap gap-2">
+            <Link
+              href="/watchlist"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              Watchlist
+            </Link>
+            <Link
+              href="/research"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
+            >
+              Research
+            </Link>
+            <Link
+              href="/portfolio"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
+            >
+              Portfolio
+            </Link>
+          </nav>
         </header>
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 py-8">
@@ -55,12 +69,13 @@ export default function Home() {
               <li>Event extraction history</li>
               <li>Simple scoring and recommendations</li>
               <li>Stored document search and job history</li>
+              <li>Portfolio actions and risk settings</li>
             </ul>
             <Link
-              href="/research"
+              href="/portfolio"
               className="mt-5 inline-flex bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
             >
-              Open Research
+              Open Portfolio
             </Link>
           </div>
         </section>

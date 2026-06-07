@@ -3,10 +3,16 @@ import {
   DocumentExtractedResponse,
   DocumentSearchResultDto,
   EmbeddingJobResponse,
+  InvestmentThesisDto,
   JobRunDto,
   ManualDocumentPasteRequest,
+  PortfolioAccountDto,
+  PortfolioActionReportResponse,
+  PortfolioHoldingDto,
   RssIngestionResponse,
+  RiskSettingsDto,
   SecIngestionResponse,
+  UpsertPortfolioHoldingRequest,
   WatchlistSummaryDto,
 } from './types';
 
@@ -93,6 +99,99 @@ class ApiClient {
     const response = await this.client.post('/embeddings/run', null, {
       params: { limit },
     });
+    return response.data;
+  }
+
+  // Portfolio endpoints
+  async getPortfolioAccounts(): Promise<PortfolioAccountDto[]> {
+    const response = await this.client.get('/portfolio/accounts');
+    return response.data;
+  }
+
+  async createPortfolioAccount(payload: {
+    accountName: string;
+    accountType: string;
+    baseCurrency: string;
+  }): Promise<PortfolioAccountDto> {
+    const response = await this.client.post('/portfolio/accounts', payload);
+    return response.data;
+  }
+
+  async updatePortfolioAccount(id: number, payload: {
+    accountName: string;
+    accountType: string;
+    baseCurrency: string;
+  }): Promise<PortfolioAccountDto> {
+    const response = await this.client.put(`/portfolio/accounts/${id}`, payload);
+    return response.data;
+  }
+
+  async deletePortfolioAccount(id: number): Promise<void> {
+    await this.client.delete(`/portfolio/accounts/${id}`);
+  }
+
+  async getPortfolioHoldings(): Promise<PortfolioHoldingDto[]> {
+    const response = await this.client.get('/portfolio/holdings');
+    return response.data;
+  }
+
+  async createPortfolioHolding(payload: UpsertPortfolioHoldingRequest): Promise<PortfolioHoldingDto> {
+    const response = await this.client.post('/portfolio/holdings', payload);
+    return response.data;
+  }
+
+  async updatePortfolioHolding(id: number, payload: UpsertPortfolioHoldingRequest): Promise<PortfolioHoldingDto> {
+    const response = await this.client.put(`/portfolio/holdings/${id}`, payload);
+    return response.data;
+  }
+
+  async deletePortfolioHolding(id: number): Promise<void> {
+    await this.client.delete(`/portfolio/holdings/${id}`);
+  }
+
+  async getRiskSettings(): Promise<RiskSettingsDto> {
+    const response = await this.client.get('/portfolio/risk-settings');
+    return response.data;
+  }
+
+  async updateRiskSettings(payload: RiskSettingsDto): Promise<RiskSettingsDto> {
+    const response = await this.client.put('/portfolio/risk-settings', payload);
+    return response.data;
+  }
+
+  async getTheses(): Promise<InvestmentThesisDto[]> {
+    const response = await this.client.get('/theses');
+    return response.data;
+  }
+
+  async createThesis(payload: {
+    companyId: number;
+    thesisText: string;
+    buyReason?: string;
+    expectedTimeHorizonMonths?: number;
+    status?: string;
+  }): Promise<InvestmentThesisDto> {
+    const response = await this.client.post('/theses', payload);
+    return response.data;
+  }
+
+  async updateThesis(id: number, payload: {
+    companyId: number;
+    thesisText: string;
+    buyReason?: string;
+    expectedTimeHorizonMonths?: number;
+    status?: string;
+  }): Promise<InvestmentThesisDto> {
+    const response = await this.client.put(`/theses/${id}`, payload);
+    return response.data;
+  }
+
+  async deleteThesis(id: number): Promise<void> {
+    await this.client.delete(`/theses/${id}`);
+  }
+
+  async generatePortfolioActionReport(): Promise<PortfolioActionReportResponse> {
+    const response = await this.client.post('/recommendations/generate');
     return response.data;
   }
 
