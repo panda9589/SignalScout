@@ -6,7 +6,7 @@ This is a research and decision-support tool. It does not place trades.
 
 ## Current Phase
 
-Phase 1 MVP is implemented:
+Phase 1 MVP is implemented, and Phase 2 has started:
 
 - Spring Boot API with manual document extraction endpoint
 - OpenAI structured event extraction, with mock extraction when no API key is set
@@ -14,6 +14,8 @@ Phase 1 MVP is implemented:
 - Deterministic Phase 1 scoring: Buy, Watch, Hold, Avoid
 - Next.js watchlist and company detail screens
 - Backend tests for scoring, hashing, JSON extraction mapping, health, and API error handling
+- Phase 2 foundation: document chunking, stored-document keyword search, and job run history endpoints
+- Phase 2 ingestion: SEC EDGAR ingestion, RSS/Atom ingestion, embedding job endpoints, and semantic-search API surface
 
 ## Local Tooling
 
@@ -90,9 +92,21 @@ The frontend defaults to:
 NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ```
 
-## Important Limitation
+Scheduled ingestion is off by default for local development:
 
-Docker is not installed in this execution environment, so the full database-backed app has not been runtime-tested end to end here. Backend and frontend builds pass. To run the app fully, install Docker Desktop or provide another local Postgres 16 instance with pgvector enabled.
+```text
+INGESTION_SCHEDULER_ENABLED=false
+INGESTION_RSS_FEEDS=https://example.com/feed.xml|NVDA,https://example.com/macro.xml
+SEC_USER_AGENT=SignalScout your-email@example.com
+```
+
+For easier local/prod switching, use the ingestion settings templates:
+
+```powershell
+Copy-Item config\ingestion.local.env.example config\ingestion.local.env
+```
+
+`scripts\backend-dev.ps1` automatically loads `.env.local` and `config\ingestion.local.env` if they exist. Keep real local/prod files untracked; only the `.example` templates belong in Git.
 
 ## Project Layout
 
