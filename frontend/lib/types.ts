@@ -134,3 +134,77 @@ export interface EmbeddingJobResponse {
   aiCalls: number;
   modelName: string;
 }
+
+export interface PortfolioAccountDto {
+  id: number;
+  accountName: string;
+  accountType: string;
+  baseCurrency: string;
+}
+
+export interface UpsertPortfolioHoldingRequest {
+  accountId: number;
+  companyId?: number;
+  symbol: string;
+  quantity?: number;
+  avgCost?: number;
+  marketValueCad?: number;
+}
+
+export interface PortfolioHoldingDto {
+  id: number;
+  accountId: number;
+  accountName: string;
+  companyId?: number;
+  ticker?: string;
+  companyName?: string;
+  symbol: string;
+  quantity?: number;
+  avgCost?: number;
+  marketValueCad?: number;
+  portfolioWeight?: number;
+}
+
+export interface InvestmentThesisDto {
+  id: number;
+  companyId: number;
+  ticker: string;
+  companyName: string;
+  thesisText: string;
+  buyReason?: string;
+  expectedTimeHorizonMonths?: number;
+  status: string;
+}
+
+export interface RiskSettingsDto {
+  maxSingleStockPositionPct: number;
+  maxSectorExposurePct: number;
+  minScoreForNewBuy: number;
+  minSourceQualityForNewBuy: number;
+}
+
+export interface PortfolioActionDto {
+  companyId: number;
+  ticker: string;
+  companyName: string;
+  sector?: string;
+  action: string;
+  stockScore?: number;
+  sourceQualityScore?: number;
+  latestRecommendation?: string;
+  currentWeightPct: number;
+  sectorExposurePct: number;
+  hasHolding: boolean;
+  hasActiveThesis: boolean;
+  reason: string;
+  buyTrigger: string;
+  sellTrigger: string;
+  riskNotes: string;
+}
+
+export interface PortfolioActionReportResponse {
+  generatedAt: string;
+  totalMarketValueCad: number;
+  riskSettings: RiskSettingsDto;
+  actions: PortfolioActionDto[];
+}

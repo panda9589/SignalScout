@@ -58,17 +58,28 @@ export default function WatchlistPage() {
         <div className="mb-8">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">Investment Watchlist</h1>
+              <Link href="/" className="text-4xl font-bold text-gray-900 mb-2 block hover:text-blue-700">
+                SignalScout
+              </Link>
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Investment Watchlist</h1>
               <p className="text-gray-600">
                 Track companies and extract investment events to generate buy/sell/hold recommendations
               </p>
             </div>
-            <Link
-              href="/research"
-              className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
-            >
-              Research
-            </Link>
+            <nav className="flex flex-wrap gap-2">
+              <Link
+                href="/research"
+                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
+              >
+                Research
+              </Link>
+              <Link
+                href="/portfolio"
+                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+              >
+                Portfolio
+              </Link>
+            </nav>
           </div>
         </div>
 

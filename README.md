@@ -6,7 +6,7 @@ This is a research and decision-support tool. It does not place trades.
 
 ## Current Phase
 
-Phase 1 MVP is implemented, and Phase 2 has started:
+Phase 1 and Phase 2 are implemented, and Phase 3 has started:
 
 - Spring Boot API with manual document extraction endpoint
 - OpenAI structured event extraction, with mock extraction when no API key is set
@@ -16,6 +16,7 @@ Phase 1 MVP is implemented, and Phase 2 has started:
 - Backend tests for scoring, hashing, JSON extraction mapping, health, and API error handling
 - Phase 2 foundation: document chunking, stored-document keyword search, and job run history endpoints
 - Phase 2 ingestion: SEC EDGAR ingestion, RSS/Atom ingestion, embedding job endpoints, and semantic-search API surface
+- Phase 3 portfolio workflow: accounts, holdings, theses, risk settings, persisted recommendations, and on-demand portfolio action reports
 
 ## Local Tooling
 
@@ -70,6 +71,7 @@ powershell -ExecutionPolicy Bypass -File scripts\frontend-dev.ps1
 URLs:
 
 - Frontend: `http://localhost:3000`
+- Portfolio workspace: `http://localhost:3000/portfolio`
 - API: `http://localhost:8080/api`
 - Health: `http://localhost:8080/api/health`
 
