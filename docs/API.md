@@ -6,10 +6,7 @@ http://localhost:8080/api
 ```
 
 ## Authentication
-All endpoints (except `/auth/login`) require a JWT token in the `Authorization` header:
-```
-Authorization: Bearer {jwt_token}
-```
+Local MVP endpoints are currently open in development. Add JWT enforcement before production.
 
 ---
 
@@ -30,40 +27,23 @@ Check application health.
 
 ## Companies
 
-### GET `/companies`
-List all companies in the watchlist or system.
-
-**Query Parameters:**
-- `ticker` (optional): Filter by ticker
-- `sector` (optional): Filter by sector
+### GET `/companies/watchlist/summary`
+Get all seeded watchlist companies with latest score/recommendation summary.
 
 **Response:**
 ```json
 [
   {
-    "id": 1,
-    "ticker": "MRVL",
-    "name": "Marvell Technology",
+    "companyId": 3,
+    "ticker": "NVDA",
+    "name": "NVIDIA Corporation",
     "sector": "Semiconductors",
-    "currency": "CAD"
+    "latestStockScore": 33,
+    "latestRecommendation": "AVOID",
+    "recentEventCount": 1
   }
 ]
 ```
-
-### POST `/companies`
-Create a new company.
-
-**Request Body:**
-```json
-{
-  "ticker": "MRVL",
-  "name": "Marvell Technology",
-  "sector": "Semiconductors",
-  "currency": "CAD"
-}
-```
-
-**Response:** 201 Created with Company object
 
 ### GET `/companies/{ticker}`
 Get company details.
@@ -71,169 +51,262 @@ Get company details.
 **Response:**
 ```json
 {
-  "id": 1,
-  "ticker": "MRVL",
-  "name": "Marvell Technology",
-  "sector": "Semiconductors",
-  "industry": "Semiconductor Manufacturing",
-  "currency": "CAD",
-  "latestScore": 75,
-  "latestAction": "WATCH"
+  "company": {
+    "id": 3,
+    "ticker": "NVDA",
+    "name": "NVIDIA Corporation",
+    "sector": "Semiconductors",
+    "industry": "Semiconductors",
+    "currency": "USD"
+  },
+  "latestStockScore": 33,
+  "latestRecommendation": "AVOID",
+  "recentEvents": []
 }
 ```
-
----
-
-## Watchlist
-
-### GET `/watchlist`
-List all watchlist items for the user.
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "ticker": "MRVL",
-    "companyName": "Marvell Technology",
-    "priority": "high",
-    "addedAt": "2026-06-01T10:00:00Z"
-  }
-]
-```
-
-### POST `/watchlist`
-Add a company to the watchlist.
-
-**Request Body:**
-```json
-{
-  "ticker": "MRVL",
-  "priority": "high",
-  "notes": "Watching for data-center acceleration"
-}
-```
-
-**Response:** 201 Created with Watchlist item
-
-### DELETE `/watchlist/{ticker}`
-Remove a company from the watchlist.
-
-**Response:** 204 No Content
 
 ---
 
 ## Documents
 
-### GET `/documents`
-List all processed documents for the user.
+### POST `/documents/manual`
+Upload a manual document as JSON. This stores the raw document, chunks it, runs extraction, stores the extracted event, and returns the score.
 
-**Query Parameters:**
-- `ticker` (optional): Filter by company ticker
-- `status` (optional): Filter by processing status (new, processing, completed, failed)
+**Request Body:**
+```json
+{
+  "raw_text": "Good afternoon, everyone. Thank you for joining...",
+  "company_id": "3",
+  "source_type": "MANUAL_PASTE"
+}
+```
+
+**Response:**
+```json
+{
+  "documentId": 3,
+  "eventId": 3,
+  "ticker": "NVDA",
+  "companyName": "NVIDIA Corporation",
+  "eventType": "management_commentary",
+  "summary": "Mock extraction - OpenAI API not configured.",
+  "stockScore": 33,
+  "recommendation": "AVOID"
+}
+```
+
+### POST `/documents/{id}/chunk`
+Recreate chunks for an existing raw document and record a `DocumentChunkingJob`.
+
+**Response:**
+```json
+{
+  "documentId": 1,
+  "jobRunId": 1,
+  "chunksCreated": 1
+}
+```
+
+### GET `/documents/{id}/chunks`
+List chunks for a stored document.
 
 **Response:**
 ```json
 [
   {
     "id": 1,
-    "title": "Earnings Transcript Q2 2026",
-    "sourceType": "MANUAL_PASTE",
-    "ticker": "MRVL",
-    "publishedAt": "2026-05-30T09:00:00Z",
-    "status": "completed",
-    "eventsCount": 3
+    "documentId": 3,
+    "chunkIndex": 0,
+    "chunkText": "NVIDIA reported accelerating AI platform demand...",
+    "tokenCount": 80,
+    "createdAt": "2026-06-04T18:10:00.614615"
   }
 ]
 ```
 
-### POST `/documents/manual`
-Upload a manual document (paste text or upload file).
+### GET `/documents/search`
+Search stored chunks by keyword.
 
-**Request Body (multipart/form-data or JSON):**
-```json
-{
-  "title": "Earnings Transcript Q2 2026",
-  "rawText": "Good afternoon, everyone. Thank you for joining...",
-  "ticker": "MRVL",
-  "sourceUrl": "https://example.com/earnings-call"
-}
-```
-
-**Response:** 201 Created with Document and extraction job reference
-
-### GET `/documents/{id}`
-Get document details and associated events.
+**Query Parameters:**
+- `q` (required): Search text
+- `limit` (optional, default `10`, max `50`): Number of results
 
 **Response:**
 ```json
-{
-  "id": 1,
-  "title": "Earnings Transcript",
-  "rawText": "...",
-  "ticker": "MRVL",
-  "status": "completed",
-  "events": [
-    {
-      "id": 1,
-      "eventType": "earnings_release",
-      "summary": "Q2 revenue beat expectations",
-      "bullishScore": 75
-    }
-  ]
-}
+[
+  {
+    "documentId": 3,
+    "chunkId": 1,
+    "chunkIndex": 0,
+    "ticker": "NVDA",
+    "title": "Manual Paste - 2026-06-04T18:10:00.578070400",
+    "sourceType": "MANUAL_PASTE",
+    "snippet": "NVIDIA reported accelerating AI platform demand..."
+  }
+]
 ```
 
-### POST `/documents/{id}/process`
-Manually trigger AI extraction on a document.
+### GET `/documents/semantic-search`
+Search stored chunks by vector similarity. Requires embeddings to exist and `OPENAI_API_KEY` to be set so the query can be embedded.
 
-**Response:** 202 Accepted (async job)
+**Query Parameters:**
+- `q` (required): Search text
+- `limit` (optional, default `10`, max `50`): Number of results
+
+**Response:**
+```json
+[
+  {
+    "documentId": 4,
+    "chunkId": 12,
+    "chunkIndex": 8,
+    "ticker": "NVDA",
+    "title": "10-Q - 2026-05-20 - 10-Q",
+    "sourceType": "SEC_FILING",
+    "snippet": "Revenue from data center compute...",
+    "distance": 0.2142
+  }
+]
+```
 
 ---
 
-## Events
+## Embeddings
 
-### GET `/events`
-List all extracted investment events.
+### POST `/embeddings/run`
+Generate missing OpenAI embeddings for stored document chunks and save them to `document_embeddings`.
 
 **Query Parameters:**
-- `ticker` (optional): Filter by company
-- `eventType` (optional): Filter by type (earnings_release, guidance_raise, etc.)
+- `limit` (optional, default `100`, max `500`): Number of chunks to embed.
+
+**Response:**
+```json
+{
+  "jobRunId": 4,
+  "chunksFound": 58,
+  "embeddingsCreated": 58,
+  "aiCalls": 2,
+  "modelName": "text-embedding-3-small"
+}
+```
+
+Requires `OPENAI_API_KEY`.
+
+---
+
+## Scheduled Ingestion
+
+Scheduled ingestion is available but disabled by default.
+
+```text
+INGESTION_SCHEDULER_ENABLED=true
+INGESTION_SEC_LIMIT_PER_COMPANY=3
+INGESTION_RSS_FEEDS=https://example.com/feed.xml|NVDA,https://example.com/macro.xml
+INGESTION_RSS_LIMIT_PER_FEED=5
+SEC_USER_AGENT=SignalScout your-email@example.com
+```
+
+When enabled, the scheduler runs SEC EDGAR ingestion for all companies with CIKs and RSS ingestion for each configured feed. RSS feed entries use `feedUrl|TICKER`; omit `|TICKER` for unassigned macro/news feeds.
+
+Config templates live in:
+
+- `config/ingestion.local.env.example`: dummy local values with scheduler disabled.
+- `config/ingestion.prod.env.example`: deployment-oriented values with scheduler enabled.
+
+For local development, copy the local example to `config/ingestion.local.env`. The backend dev script loads it automatically.
+
+---
+
+## Jobs
+
+### GET `/jobs`
+List recent job runs.
+
+**Query Parameters:**
+- `limit` (optional, default `20`, max `100`): Number of jobs
 
 **Response:**
 ```json
 [
   {
     "id": 1,
-    "ticker": "MRVL",
-    "eventType": "earnings_release",
-    "summary": "Q2 revenue acceleration in data-center segment",
-    "bullishScore": 75,
-    "bearishScore": 30,
-    "sourceQualityScore": 85,
-    "confidenceScore": 78,
-    "requiredManualReview": false
+    "jobName": "DocumentChunkingJob",
+    "startedAt": "2026-06-04T18:10:18.422131",
+    "finishedAt": "2026-06-04T18:10:18.442889",
+    "status": "success",
+    "errorMessage": null,
+    "documentsFound": 1,
+    "documentsProcessed": 1,
+    "aiCalls": 0,
+    "estimatedCostUsd": null
   }
 ]
 ```
 
-### GET `/events/{id}`
-Get event details with full bull/bear cases and evidence.
+### GET `/jobs/{id}`
+Get a single job run.
 
 **Response:**
 ```json
 {
-  "id": 1,
-  "ticker": "MRVL",
-  "eventType": "earnings_release",
-  "summary": "Q2 revenue acceleration in data-center segment",
-  "bullCase": ["Revenue growth", "Margin improvement"],
-  "bearCase": ["Valuation concerns"],
-  "risks": ["Customer concentration"],
-  "watchItems": ["Next earnings call", "Guidance"],
-  "bullishScore": 75,
-  "bearishScore": 30,
-  "confidenceScore": 78
+  "id": 7,
+  "jobName": "EmbeddingJob",
+  "startedAt": "2026-06-04T20:50:00",
+  "finishedAt": "2026-06-04T20:50:03",
+  "status": "success",
+  "documentsFound": 56,
+  "documentsProcessed": 56,
+  "aiCalls": 2
+}
+```
+
+---
+
+## Ingestion
+
+### POST `/ingestion/sec/run`
+Fetch recent SEC EDGAR filings from `data.sec.gov` for one ticker or all companies with CIKs, store new filings as raw documents, create chunks, and record a job run.
+
+**Query Parameters:**
+- `ticker` (optional): Company ticker to ingest. If omitted, scans all companies with CIKs.
+- `limit` (optional, default `3`, max `20`): Recent matching filings per company.
+
+**Response:**
+```json
+{
+  "jobRunId": 2,
+  "companiesScanned": 1,
+  "filingsFound": 1,
+  "documentsStored": 1,
+  "duplicatesSkipped": 0,
+  "chunksCreated": 58
+}
+```
+
+Set `SEC_USER_AGENT` before production use so SEC requests identify your app and contact email.
+
+### POST `/ingestion/sec/documents/{documentId}/reprocess`
+Re-download an already-stored SEC filing, apply the current SEC text cleanup, and recreate chunks. Existing embeddings for that document's old chunks are deleted by cascade; run `/embeddings/run` after reprocessing.
+
+**Response:** same shape as `/ingestion/sec/run`.
+
+### POST `/ingestion/rss/run`
+Fetch RSS or Atom feed items, store new items as raw documents, create chunks, and record a job run.
+
+**Query Parameters:**
+- `feedUrl` (required): RSS or Atom feed URL.
+- `ticker` (optional): Existing company ticker to associate with the feed items.
+- `limit` (optional, default `5`, max `50`): Feed items to process.
+
+**Response:**
+```json
+{
+  "jobRunId": 5,
+  "itemsFound": 5,
+  "documentsStored": 5,
+  "duplicatesSkipped": 0,
+  "autoMatchedDocuments": 3,
+  "chunksCreated": 5
 }
 ```
 

@@ -1,0 +1,11 @@
+.tools/
+*.log
+.env
+.env.local
+config/*.local.env
+config/*.prod.env
+frontend/.next/
+frontend/node_modules/
+frontend/tsconfig.tsbuildinfo
+backend/.gradle/
+backend/build/

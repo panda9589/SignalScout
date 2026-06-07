@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: pgvector/pgvector:pg16-latest
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_DB: signalscout_test
           POSTGRES_USER: scout
@@ -26,6 +26,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x backend/gradlew
 
       - name: Set up Java
         uses: actions/setup-java@v3

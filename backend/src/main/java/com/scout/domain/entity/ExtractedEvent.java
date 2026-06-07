@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -45,15 +47,19 @@ public class ExtractedEvent {
     private String whatChanged;
 
     @Column(name = "bull_case", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String bullCase;
 
     @Column(name = "bear_case", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String bearCase;
 
     @Column(columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String risks;
 
     @Column(name = "watch_items", columnDefinition = "JSONB")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String watchItems;
 
     @Column(name = "bullish_score")

@@ -9,10 +9,13 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:scout}
     password: ${SPRING_DATASOURCE_PASSWORD:scout_dev_password}
     driver-class-name: org.postgresql.Driver
+
+  flyway:
+    baseline-on-migrate: true
     
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: false
     properties:
@@ -45,6 +48,29 @@ server:
   error:
     include-message: always
     include-stacktrace: on_param
+
+# OpenAI Configuration
+openai:
+  api:
+    key: ${OPENAI_API_KEY:}
+    endpoint: https://api.openai.com/v1/chat/completions
+
+sec:
+  api:
+    user-agent: ${SEC_USER_AGENT:SignalScout local-dev contact@example.com}
+
+ingestion:
+  scheduler:
+    enabled: ${INGESTION_SCHEDULER_ENABLED:false}
+  sec:
+    limit-per-company: ${INGESTION_SEC_LIMIT_PER_COMPANY:3}
+    initial-delay-ms: ${INGESTION_SEC_INITIAL_DELAY_MS:60000}
+    fixed-delay-ms: ${INGESTION_SEC_FIXED_DELAY_MS:3600000}
+  rss:
+    feeds: ${INGESTION_RSS_FEEDS:}
+    limit-per-feed: ${INGESTION_RSS_LIMIT_PER_FEED:5}
+    initial-delay-ms: ${INGESTION_RSS_INITIAL_DELAY_MS:90000}
+    fixed-delay-ms: ${INGESTION_RSS_FIXED_DELAY_MS:3600000}
 
 # Logging
 logging:

@@ -1,253 +1,119 @@
 # SignalScout
 
-**SignalScout** is a personal investment research radar and decision-support tool. It ingests official company documents, emails, news, and transcripts; extracts structured investment events using AI; and generates portfolio action recommendations with deterministic scoring rules.
+SignalScout is a personal market research radar for investment memos. Phase 1 focuses on the manual workflow: paste a document, extract structured investment events, score the signal with deterministic rules, and view the result by company.
 
-**Core Principle:** This is a research tool and watchlist manager, not an auto-trading bot.
+This is a research and decision-support tool. It does not place trades.
 
-## Tech Stack
+## Current Phase
 
-- **Backend**: Java 21 + Spring Boot 3.x + Postgres + pgvector
-- **Frontend**: Next.js + React + Tailwind CSS
-- **AI**: OpenAI structured extraction + embeddings
-- **Deployment**: Docker Compose (local), managed Postgres (cloud)
+Phase 1 MVP is implemented, and Phase 2 has started:
 
-## Quick Start (Local Development)
+- Spring Boot API with manual document extraction endpoint
+- OpenAI structured event extraction, with mock extraction when no API key is set
+- Postgres/Flyway schema for companies, documents, events, scores, portfolio, reports, and jobs
+- Deterministic Phase 1 scoring: Buy, Watch, Hold, Avoid
+- Next.js watchlist and company detail screens
+- Backend tests for scoring, hashing, JSON extraction mapping, health, and API error handling
+- Phase 2 foundation: document chunking, stored-document keyword search, and job run history endpoints
+- Phase 2 ingestion: SEC EDGAR ingestion, RSS/Atom ingestion, embedding job endpoints, and semantic-search API surface
 
-### Prerequisites
+## Local Tooling
 
-- Docker & Docker Compose
-- Java 21 (for backend development)
-- Node.js 18+ (for frontend development)
-- Git
+This repo can use project-local tools under `.tools/`:
 
-### 1. Clone & Setup
-
-```bash
-cd c:\Users\tyb_l\SignalScout
-git init
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\install-dev-tools.ps1
 ```
 
-### 2. Start Docker Compose Stack
+That installs portable Java 21, Node.js, and Gradle into `.tools/`. The directory is ignored by Git.
 
-```bash
-docker-compose -f infra/docker-compose/docker-compose.yml up -d
+## Build And Test
+
+Backend:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\backend-build.ps1
 ```
 
-This starts:
-- PostgreSQL 16 with pgvector extension
-- Redis (optional, for job queues later)
+Frontend:
 
-Verify with:
-```bash
-docker ps
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\frontend-build.ps1
 ```
 
-### 3. Run Database Migrations
+Verified on this workspace:
 
-```bash
-# Copy SQL schema into Postgres
-docker exec signalscout-postgres psql -U scout -d signalscout -f /docker-entrypoint-initdb.d/001_init_schema.sql
+- `backend\gradlew.bat -p backend clean build`
+- `npm run type-check`
+- `npm run build`
+
+## Run Locally
+
+Start Postgres and Redis:
+
+```powershell
+docker compose -f infra\docker-compose\docker-compose.yml up -d
 ```
 
-### 4. Build & Run Backend
+Then start the API:
 
-```bash
-cd backend
-./gradlew build
-./gradlew bootRun
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\backend-dev.ps1
 ```
 
-Backend API runs on `http://localhost:8080`
+Start the frontend in a second terminal:
 
-### 5. Build & Run Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\frontend-dev.ps1
 ```
 
-Frontend runs on `http://localhost:3000`
+URLs:
 
-## Project Structure
+- Frontend: `http://localhost:3000`
+- API: `http://localhost:8080/api`
+- Health: `http://localhost:8080/api/health`
 
-```
-signalscout/
-├── README.md
-├── docker-compose.yml
-├── .env.example
-│
-├── backend/                        # Spring Boot API
-│   ├── build.gradle
-│   ├── src/main/java/com/scout/
-│   │   ├── api/                   # REST controllers
-│   │   ├── auth/                  # JWT/Spring Security
-│   │   ├── company/               # Company management
-│   │   ├── watchlist/             # Watchlist logic
-│   │   ├── document/              # Document ingestion
-│   │   ├── extraction/            # AI extraction service
-│   │   ├── scoring/               # Scoring & recommendation engine
-│   │   ├── portfolio/             # Portfolio holdings & accounts
-│   │   ├── thesis/                # Investment thesis tracking
-│   │   ├── job/                   # Scheduled jobs
-│   │   └── common/                # Shared utils, exceptions
-│   ├── src/test/
-│   └── docker/Dockerfile
-│
-├── frontend/                       # Next.js dashboard
-│   ├── app/
-│   │   ├── dashboard/             # Main dashboard
-│   │   ├── watchlist/             # Watchlist page
-│   │   ├── company/[ticker]/      # Company detail page
-│   │   ├── portfolio/             # Portfolio view
-│   │   ├── reports/               # Reports & digests
-│   │   └── settings/              # User settings
-│   ├── components/
-│   ├── lib/
-│   ├── package.json
-│   └── Dockerfile
-│
-├── infra/
-│   ├── docker-compose/
-│   │   └── docker-compose.yml
-│   └── postgres-init/
-│       └── 001_init_schema.sql    # Schema + pgvector setup
-│
-├── docs/
-│   ├── API.md                     # API contracts
-│   ├── DESIGN.md                  # Full design document reference
-│   ├── EXTRACTION.md              # AI extraction prompts & schemas
-│   ├── DATABASE.md                # Schema docs
-│   └── DEPLOYMENT.md              # Production deployment
-│
-└── .github/
-    └── workflows/
-        └── ci-cd.yml              # GitHub Actions
-```
+## Environment
 
-## Development Phases
+The backend defaults to:
 
-### Phase 1: Manual MVP (Current)
-- Manual document paste endpoint
-- AI extraction into structured JSON
-- Company watchlist page
-- Basic score display
-
-### Phase 2: Core Research Radar
-- SEC EDGAR ingestion
-- RSS feed polling
-- Document deduplication
-- Embeddings & semantic search
-
-### Phase 3: Portfolio-Aware Decisions
-- Portfolio accounts/holdings
-- Investment thesis tracking
-- Scoring engine
-- Buy/Hold/Sell recommendation rules
-
-### Phase 4: Reports & Workflow
-- Daily digest generation
-- Weekly action report
-- Markdown export
-
-### Phase 5: Better Ingestion
-- Gmail label ingestion
-- Earnings transcript sources
-- Source trust scoring
-
-### Phase 6: Evaluation
-- Recommendation backtest
-- Outcome tracking
-- Scoring tune-ups
-
-## Environment Variables
-
-Create `.env` in the root:
-
-```bash
-# Backend
+```text
 SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/signalscout
 SPRING_DATASOURCE_USERNAME=scout
 SPRING_DATASOURCE_PASSWORD=scout_dev_password
-
-# AI
-OPENAI_API_KEY=your-key-here
-OPENAI_EXTRACTION_MODEL=gpt-4
-OPENAI_EMBEDDING_MODEL=text-embedding-3-small
-
-# App
-APP_BASE_URL=http://localhost:3000
-JWT_SECRET=dev-secret-change-in-prod
-
-# Limits
-AI_DAILY_COST_LIMIT_USD=10.00
+OPENAI_API_KEY=
 ```
 
-## Building & Testing
+If `OPENAI_API_KEY` is empty, the extraction service returns a mock extraction so the UI flow can still be tested.
 
-**Backend**:
-```bash
-cd backend
-./gradlew test       # Run tests
-./gradlew build      # Build JAR
+The frontend defaults to:
+
+```text
+NEXT_PUBLIC_API_URL=http://localhost:8080/api
 ```
 
-**Frontend**:
-```bash
-cd frontend
-npm test             # Run tests
-npm run build        # Build for production
+Scheduled ingestion is off by default for local development:
+
+```text
+INGESTION_SCHEDULER_ENABLED=false
+INGESTION_RSS_FEEDS=https://example.com/feed.xml|NVDA,https://example.com/macro.xml
+SEC_USER_AGENT=SignalScout your-email@example.com
 ```
 
-## Database Migrations
+For easier local/prod switching, use the ingestion settings templates:
 
-Migrations are in `backend/src/main/resources/db/migration/`.
+```powershell
+Copy-Item config\ingestion.local.env.example config\ingestion.local.env
+```
 
-To add a new migration:
-1. Create `V<version>__<description>.sql` in the migration folder
-2. Flyway will run it automatically on app startup
+`scripts\backend-dev.ps1` automatically loads `.env.local` and `config\ingestion.local.env` if they exist. Keep real local/prod files untracked; only the `.example` templates belong in Git.
 
-## API Documentation
+## Project Layout
 
-See [docs/API.md](docs/API.md) for REST endpoints.
-
-## Key Design Principles
-
-1. **AI is the analyst, rules are the decision-maker**: LLMs extract facts and draft memos. Deterministic scoring rules decide Buy/Hold/Sell.
-2. **Every buy must beat a broad ETF**: Recommendations compare against XEQT, VFV, XQQ, etc.
-3. **Social media is a smoke detector**: Low-trust sources only trigger watchlist items, never buys.
-4. **Thesis required**: Single-stock buys must have a documented thesis with triggers and invalidation conditions.
-5. **No auto-trading**: This tool supports research decisions, not algorithmic trading.
-
-## Testing & Golden Cases
-
-The app validates against golden test cases:
-
-- **Positive earnings + guidance raise** → WATCH/BUY candidate (if score high enough)
-- **Social hype only** → AVOID or low-priority WATCH
-- **Guidance cut** → SELL/TRIM warning
-- **Position too large** → TRIM (even if fundamentals good)
-- **Single stock vs broad ETF** → ETF recommended if stock doesn't justify premium
-
-## Contributing
-
-This is a personal research project, but improvements welcome. Run the full test suite before submitting PRs.
-
-## Security Notes
-
-- Never commit secrets or API keys
-- OAuth tokens encrypted at rest (Spring Security)
-- Passwords hashed (bcrypt)
-- Email content not logged
-- User data export available on request
-
-## License
-
-Personal use only. Not licensed for redistribution or commercial use without legal review.
-
----
-
-**Project Start**: 2026-06-04  
-**Version**: 1.0 (Phase 1 MVP)  
-**Reference**: Design document in `docs/DESIGN.md`
-Scout signals. Skip hype. An AI-powered investment research radar that scans filings, earnings, news, emails, and transcripts to detect what changed, what matters, and what to watch next.
+```text
+backend/   Spring Boot API
+frontend/  Next.js dashboard
+infra/     Docker Compose and Postgres init SQL
+docs/      API, database, deployment, extraction docs
+scripts/   Local tool install and build/dev helpers
+```
