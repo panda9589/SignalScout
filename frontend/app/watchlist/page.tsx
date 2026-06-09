@@ -75,9 +75,15 @@ export default function WatchlistPage() {
               </Link>
               <Link
                 href="/portfolio"
-                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+                className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
               >
                 Portfolio
+              </Link>
+              <Link
+                href="/reports"
+                className="bg-gray-900 hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded"
+              >
+                Reports
               </Link>
             </nav>
           </div>

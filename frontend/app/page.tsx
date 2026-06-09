@@ -45,6 +45,12 @@ export default function Home() {
             >
               Portfolio
             </Link>
+            <Link
+              href="/reports"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
+            >
+              Reports
+            </Link>
           </nav>
         </header>
 
@@ -70,6 +76,7 @@ export default function Home() {
               <li>Simple scoring and recommendations</li>
               <li>Stored document search and job history</li>
               <li>Portfolio actions and risk settings</li>
+              <li>Daily and weekly research reports</li>
             </ul>
             <Link
               href="/portfolio"

@@ -327,6 +327,9 @@ export default function PortfolioPage() {
             <Link href="/research" className="rounded bg-white px-4 py-2 font-semibold text-gray-800 ring-1 ring-gray-200 hover:bg-gray-100">
               Research
             </Link>
+            <Link href="/reports" className="rounded bg-white px-4 py-2 font-semibold text-gray-800 ring-1 ring-gray-200 hover:bg-gray-100">
+              Reports
+            </Link>
           </nav>
         </header>
 

@@ -9,9 +9,12 @@ import {
   PortfolioAccountDto,
   PortfolioActionReportResponse,
   PortfolioHoldingDto,
+  ReportDetailDto,
+  ReportSummaryDto,
   RssIngestionResponse,
   RiskSettingsDto,
   SecIngestionResponse,
+  UpcomingEventDto,
   UpsertPortfolioHoldingRequest,
   WatchlistSummaryDto,
 } from './types';
@@ -193,6 +196,37 @@ class ApiClient {
   async generatePortfolioActionReport(): Promise<PortfolioActionReportResponse> {
     const response = await this.client.post('/recommendations/generate');
     return response.data;
+  }
+
+  // Report endpoints
+  async getReports(reportType?: string, limit = 20): Promise<ReportSummaryDto[]> {
+    const response = await this.client.get('/reports', {
+      params: { reportType: reportType || undefined, limit },
+    });
+    return response.data;
+  }
+
+  async getReport(id: number): Promise<ReportDetailDto> {
+    const response = await this.client.get(`/reports/${id}`);
+    return response.data;
+  }
+
+  async generateReport(reportType: 'daily' | 'weekly' | 'action'): Promise<ReportDetailDto> {
+    const response = await this.client.post('/reports/generate', null, {
+      params: { reportType },
+    });
+    return response.data;
+  }
+
+  async getUpcomingEvents(limit = 20): Promise<UpcomingEventDto[]> {
+    const response = await this.client.get('/reports/upcoming-events', {
+      params: { limit },
+    });
+    return response.data;
+  }
+
+  async emailReport(id: number): Promise<void> {
+    await this.client.post(`/reports/${id}/email`);
   }
 
   // Admin endpoints

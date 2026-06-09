@@ -186,9 +186,15 @@ export default function ResearchPage() {
             </Link>
             <Link
               href="/portfolio"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+              className="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 rounded ring-1 ring-gray-200"
             >
               Portfolio
+            </Link>
+            <Link
+              href="/reports"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded"
+            >
+              Reports
             </Link>
           </nav>
         </header>

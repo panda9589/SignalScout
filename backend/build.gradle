@@ -19,6 +19,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Database
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -40,6 +41,9 @@ dependencies {
 
     // OpenAI client (will use REST calls for now)
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+
+    // PDF export
+    implementation 'org.apache.pdfbox:pdfbox:2.0.30'
 
     // Lombok (optional, for less boilerplate)
     compileOnly 'org.projectlombok:lombok'

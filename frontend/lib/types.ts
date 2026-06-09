@@ -208,3 +208,29 @@ export interface PortfolioActionReportResponse {
   riskSettings: RiskSettingsDto;
   actions: PortfolioActionDto[];
 }
+
+export interface ReportSummaryDto {
+  id: number;
+  reportType: string;
+  title: string;
+  createdAt: string;
+}
+
+export interface ReportDetailDto {
+  id: number;
+  reportType: string;
+  title: string;
+  reportMarkdown: string;
+  reportJson?: string;
+  createdAt: string;
+}
+
+export interface UpcomingEventDto {
+  eventType: string;
+  dueDate: string;
+  ticker?: string;
+  companyName?: string;
+  title: string;
+  reason: string;
+  priority: string;
+}

@@ -541,10 +541,11 @@ Create a new investment thesis.
 ## Reports
 
 ### GET `/reports`
-List all generated reports.
+List generated reports.
 
 **Query Parameters:**
-- `reportType` (optional): daily, weekly, action, company
+- `reportType` (optional): `daily`, `weekly`, or `action`
+- `limit` (optional, default `20`, max `100`): number of reports
 
 **Response:**
 ```json
@@ -559,18 +560,75 @@ List all generated reports.
 ```
 
 ### GET `/reports/{id}`
-Get report full content.
+Get saved report content.
 
 **Response:**
 ```json
 {
   "id": 1,
   "reportType": "weekly",
-  "title": "Weekly Signal Report",
-  "reportMarkdown": "# Weekly Report...",
-  "createdAt": "2026-06-08T18:00:00Z"
+  "title": "Weekly Market Intelligence Report - 2026-06-06",
+  "reportMarkdown": "# Weekly Market Intelligence Report...",
+  "reportJson": "{\"totalMarketValueCad\":1000,\"actionCount\":5}",
+  "createdAt": "2026-06-06T20:55:00"
 }
 ```
+
+### POST `/reports/generate`
+Generate and save a report.
+
+**Query Parameters:**
+- `reportType` (optional, default `weekly`): `daily`, `weekly`, or `action`
+
+**Response:** same shape as `GET /reports/{id}` with `201 Created`.
+
+### GET `/reports/{id}/pdf`
+Download the report as a browser PDF attachment. This is the manual PDF path from report history.
+
+**Response:** `application/pdf` attachment.
+
+### POST `/reports/{id}/email`
+Email the saved report as a PDF attachment to `REPORT_EMAIL_TO`.
+
+**Response:** `202 Accepted`
+
+### GET `/reports/upcoming-events`
+Get upcoming workflow items derived from manual-review signals and stale watchlist evidence.
+
+**Query Parameters:**
+- `limit` (optional, default `20`, max `50`)
+
+**Response:**
+```json
+[
+  {
+    "eventType": "WATCHLIST_REVIEW",
+    "dueDate": "2026-06-09",
+    "ticker": "AMD",
+    "companyName": "Advanced Micro Devices, Inc.",
+    "title": "Refresh watchlist evidence",
+    "reason": "No recent extracted event in the last 14 days.",
+    "priority": "medium"
+  }
+]
+```
+
+Scheduled report generation is disabled locally by default. Enable it with:
+
+```text
+REPORT_SCHEDULER_ENABLED=true
+REPORT_DAILY_CRON=0 0 18 * * MON-FRI
+REPORT_WEEKLY_CRON=0 0 18 * * SUN
+REPORT_EMAIL_TO=tyblele@gmail.com
+REPORT_EMAIL_FROM=tyblele@gmail.com
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=tyblele@gmail.com
+SMTP_PASSWORD=your-gmail-app-password
+SMTP_STARTTLS_ENABLED=true
+```
+
+When `REPORT_SCHEDULER_ENABLED=true`, scheduled daily and weekly reports are saved in report history and emailed as PDF attachments.
 
 ---
 

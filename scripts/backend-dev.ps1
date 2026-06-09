@@ -12,6 +12,8 @@ if (Test-Path -LiteralPath $envLoader) {
     . $envLoader
     Import-SignalScoutEnv -Path (Join-Path $repoRoot ".env.local")
     Import-SignalScoutEnv -Path (Join-Path $repoRoot "config\ingestion.local.env")
+    Import-SignalScoutEnv -Path (Join-Path $repoRoot "config\email.local.env")
+    Import-SignalScoutEnv -Path (Join-Path $repoRoot "config\reports.local.env")
 }
 
 $env:JAVA_HOME = $javaHome
